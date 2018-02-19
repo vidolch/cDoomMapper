@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cDoom Level Creator</title>
+    <script type="text/javascript" src="src/main.js"></script>
+  </head>
+  <body>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+    <input type="text" name="rows" id="rows">
+    <input type="text" name="cols" id="cols">
+    <input type="button" value="set" onclick="set();">
+    <div id="canvasDiv"></div>
+    
+    <script type="text/javascript">
+      function set() {
+        let rows = document.getElementById('rows').value;
+        let cols = document.getElementById('cols').value;
+        var sp = new Spriter(rows, cols);
+        sp.start();
+      };
+    </script>
+  </body>
+</html>
