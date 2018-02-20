@@ -4,24 +4,31 @@ class Spriter {
 		this.context;
 		this.canvasWidth = 800;
 		this.canvasHeight = 800;
+		this.blockHeight = this.canvasHeight / rows;
+		this.blockWidth = this.canvasWidth / cols;
 
-		this.rows = rows;
-		this.cols = cols; 
+		this.spriteMap = [];
 
-		this.clickX = new Array();
-		this.clickY = new Array();
-		this.clickColor = new Array();
-		this.clickTool = new Array();
-		this.clickSize = new Array();
-		this.clickDrag = new Array();
+		for (let i = 0; i < rows; i++) {
+			this.spriteMap.push([]);
+			for (let j = 0; j < cols; j++) {
+				this.spriteMap[i].push({
+					background: 'transparent'
+				});
+			}
+		}
+		// this.rows = rows;
+		// this.cols = cols; 
+
+		this.clickX = -1;
+		this.clickY = -1;
 
 		this.drag = false;
 		this.curColor = "#659b41";
-		this.curTool = "crayon";
-		this.curSize = "normal";
 	}
 	start() {
 		this.prepareCanvas();
+		this.redraw();
 	}
 	prepareCanvas() {
 		// Create the canvas (Neccessary for IE because it doesn't know what a canvas element is)
@@ -45,13 +52,13 @@ class Spriter {
 			var mouseY = e.pageY - this.offsetTop;
 
 			self.drag = true;
-			self.addClick(mouseX, mouseY, false);
+			self.addClick(mouseX, mouseY);
 			self.redraw();
 		});
 
 		this.canvas.addEventListener('mousemove', function (e) {
 			if (self.drag == true) {
-				self.addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+				self.addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
 				self.redraw();
 			}
 		});
@@ -62,13 +69,13 @@ class Spriter {
 		});
 	}
 
-	addClick(x, y, dragging) {
-		this.clickX.push(x);
-		this.clickY.push(y);
-		this.clickTool.push(this.curTool);
-		this.clickColor.push(this.curColor);
-		this.clickSize.push(this.curSize);
-		this.clickDrag.push(dragging);
+	addClick(x, y) {
+		this.clickX = x;
+		this.clickY = y;
+	}
+
+	updateColor(color) {
+		this.curColor = color;
 	}
 
 	clearCanvas() {
@@ -76,20 +83,25 @@ class Spriter {
 	}
 
 	redraw() {
-		this.context.lineJoin = "square";
+		if(this.clickX !== -1 && this.clickY !== -1) {
+			let clickX = Math.floor(this.clickX / this.blockHeight);
+			let clickY = Math.floor(this.clickY / this.blockHeight);
+			this.spriteMap[clickY][clickX].background = this.curColor;
+			this.clickX = -1;
+			this.clickY = -1;
+		}
 
-		for (var i = 0; i < this.clickX.length; i++) {
-			this.context.beginPath();
-			if (this.clickDrag[i] && i) {
-				this.context.moveTo(this.clickX[i - 1], this.clickY[i - 1]);
-			} else {
-				this.context.moveTo(this.clickX[i] - 1, this.clickY[i]);
+		for (let i = 0; i < this.spriteMap.length; i++) {
+			for (let j = 0; j < this.spriteMap[i].length; j++) {
+				if(this.spriteMap[i][j].background === 'transparent') {
+					this.context.strokeStyle = 'black';
+					this.context.lineWidth = 1;
+					this.context.strokeRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
+				} else {
+					this.context.fillStyle = this.spriteMap[i][j].background;
+					this.context.fillRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
+				}
 			}
-			this.context.lineTo(this.clickX[i], this.clickY[i]);
-			this.context.closePath();
-			this.context.strokeStyle = this.clickColor[i];
-			this.context.lineWidth = 5;
-			this.context.stroke();
 		}
 	}
 }

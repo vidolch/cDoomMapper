@@ -3,6 +3,7 @@
   <head>
     <title>cDoom Level Creator</title>
     <script type="text/javascript" src="src/main.js"></script>
+    <script src="src/jscolor.js"></script>
   </head>
   <body>
     <style>
@@ -10,18 +11,24 @@
         border: 1px solid black;
       }
     </style>
-    <input type="text" name="rows" id="rows">
-    <input type="text" name="cols" id="cols">
+    <input type="text" name="rows" id="rows" value="20">
+    <input type="text" name="cols" id="cols" value="20">
     <input type="button" value="set" onclick="set();">
     <div id="canvasDiv"></div>
+
+    Color: <input class="jscolor" value="ab2567" onchange="update(this.jscolor.toRGBString())">
     
     <script type="text/javascript">
+      var sp;
       function set() {
         let rows = document.getElementById('rows').value;
         let cols = document.getElementById('cols').value;
-        var sp = new Spriter(rows, cols);
+        sp = new Spriter(rows, cols);
         sp.start();
       };
+      function update(color) {
+        sp.updateColor(color);
+      }
     </script>
   </body>
 </html>
