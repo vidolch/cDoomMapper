@@ -17,14 +17,12 @@ class Spriter {
 				});
 			}
 		}
-		// this.rows = rows;
-		// this.cols = cols; 
 
 		this.clickX = -1;
 		this.clickY = -1;
 
 		this.drag = false;
-		this.curColor = "#659b41";
+		this.curColor = "#000";
 	}
 	start() {
 		this.prepareCanvas();

@@ -11,12 +11,14 @@
         border: 1px solid black;
       }
     </style>
-    <input type="text" name="rows" id="rows" value="20">
-    <input type="text" name="cols" id="cols" value="20">
-    <input type="button" value="set" onclick="set();">
+    <form action="" id="setGrid">
+      <input type="text" name="rows" id="rows" value="20">
+      <input type="text" name="cols" id="cols" value="20">
+      <input type="button" value="set" onclick="set();">
+    </form>
+    Color: <input class="jscolor" value="000000" onchange="update(this.jscolor.toRGBString())">
     <div id="canvasDiv"></div>
 
-    Color: <input class="jscolor" value="ab2567" onchange="update(this.jscolor.toRGBString())">
     
     <script type="text/javascript">
       var sp;
@@ -25,6 +27,7 @@
         let cols = document.getElementById('cols').value;
         sp = new Spriter(rows, cols);
         sp.start();
+        document.getElementById('setGrid').remove();
       };
       function update(color) {
         sp.updateColor(color);
