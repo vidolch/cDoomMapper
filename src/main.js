@@ -2,16 +2,16 @@ class Spriter {
 	constructor(rows, cols) {
 		this.canvas;
 		this.context;
-		this.canvasWidth = 800;
-		this.canvasHeight = 800;
-		this.blockHeight = this.canvasHeight / rows;
-		this.blockWidth = this.canvasWidth / cols;
+		this.blockHeight = 30;
+		this.blockWidth = 30;
+		this.canvasWidth = rows * this.blockWidth;
+		this.canvasHeight = cols * this.blockHeight;
 
 		this.spriteMap = [];
 
-		for (let i = 0; i < rows; i++) {
+		for (let i = 0; i < cols; i++) {
 			this.spriteMap.push([]);
-			for (let j = 0; j < cols; j++) {
+			for (let j = 0; j < rows; j++) {
 				this.spriteMap[i].push({
 					background: 'transparent'
 				});
@@ -38,6 +38,10 @@ class Spriter {
 		this.canvasDiv.appendChild(this.canvas);
 
 		this.context = this.canvas.getContext("2d");
+
+		// We always use one stroke style
+		this.context.strokeStyle = 'black';
+		this.context.lineWidth = 1;
 
 		let self = this;
 		// Grab the 2d canvas context
@@ -76,11 +80,16 @@ class Spriter {
 		this.curColor = color;
 	}
 
+	eraseMode() {
+		this.curColor = 'transparent';
+	}
+
 	clearCanvas() {
 		this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 	}
 
 	redraw() {
+		this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		if(this.clickX !== -1 && this.clickY !== -1) {
 			let clickX = Math.floor(this.clickX / this.blockHeight);
 			let clickY = Math.floor(this.clickY / this.blockHeight);
@@ -92,13 +101,12 @@ class Spriter {
 		for (let i = 0; i < this.spriteMap.length; i++) {
 			for (let j = 0; j < this.spriteMap[i].length; j++) {
 				if(this.spriteMap[i][j].background === 'transparent') {
-					this.context.strokeStyle = 'black';
-					this.context.lineWidth = 1;
-					this.context.strokeRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
+					this.context.fillStyle = 'rgba(0,0,0,0)';
 				} else {
 					this.context.fillStyle = this.spriteMap[i][j].background;
-					this.context.fillRect(j * this.blockWidth + 1, i * this.blockHeight + 1, this.blockWidth - 2, this.blockHeight - 2);
 				}
+				this.context.strokeRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
+				this.context.fillRect(j * this.blockWidth + 1, i * this.blockHeight + 1, this.blockWidth - 2, this.blockHeight - 2);
 			}
 		}
 	}

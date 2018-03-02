@@ -9,6 +9,9 @@
     <style>
       canvas {
         border: 1px solid black;
+        background-image: url(images/transparent.jpg);
+        background-repeat: repeat;
+        background-size: 50%;
       }
     </style>
     <form action="" id="setGrid">
@@ -17,6 +20,7 @@
       <input type="button" value="set" onclick="set();">
     </form>
     Color: <input class="jscolor" value="000000" onchange="update(this.jscolor.toRGBString())">
+    <input type="button" class="erase" value="Delete mode" onclick="erase()">
     <input type="button" value="rcpoty" onclick="exportAsset();" id="exportBtn" style="display: none;">
     <div id="canvasDiv"></div>
 
@@ -33,6 +37,9 @@
       };
       function update(color) {
         sp.updateColor(color);
+      };
+      function erase() {
+        sp.eraseMode();
       };
       function exportAsset() {
         console.log(sp.exportAsset());
