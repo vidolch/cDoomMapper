@@ -97,9 +97,31 @@ class Spriter {
 					this.context.strokeRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
 				} else {
 					this.context.fillStyle = this.spriteMap[i][j].background;
-					this.context.fillRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
+					this.context.fillRect(j * this.blockWidth + 1, i * this.blockHeight + 1, this.blockWidth - 2, this.blockHeight - 2);
 				}
 			}
 		}
+	}
+
+	exportAsset() {
+		let exportObj = [];
+		for (let i = 0; i < this.spriteMap.length; i++) {
+			exportObj.push([]);
+			let hasHorElements = false;
+			let tempHorBuffer = [];
+			for (let j = 0; j < this.spriteMap[i].length; j++) {
+				if(this.spriteMap[i][j].background === 'transparent') {
+					exportObj[i].push('.');
+				} else {
+					exportObj[i].push(this.spriteMap[i][j].background);
+				}
+			}
+		}
+		var a = document.createElement("a");
+		var file = new Blob([JSON.stringify(exportObj)], {type: 'text/plain'});
+		a.href = URL.createObjectURL(file);
+		a.download = 'asset.json';
+		a.click();
+		return exportObj;
 	}
 }

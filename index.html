@@ -17,6 +17,7 @@
       <input type="button" value="set" onclick="set();">
     </form>
     Color: <input class="jscolor" value="000000" onchange="update(this.jscolor.toRGBString())">
+    <input type="button" value="rcpoty" onclick="exportAsset();" id="exportBtn" style="display: none;">
     <div id="canvasDiv"></div>
 
     
@@ -28,9 +29,13 @@
         sp = new Spriter(rows, cols);
         sp.start();
         document.getElementById('setGrid').remove();
+        document.getElementById('exportBtn').style.display = 'inline-block';
       };
       function update(color) {
         sp.updateColor(color);
+      };
+      function exportAsset() {
+        console.log(sp.exportAsset());
       }
     </script>
   </body>
