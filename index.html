@@ -18,6 +18,7 @@
       <input type="text" name="rows" id="rows" value="20">
       <input type="text" name="cols" id="cols" value="20">
       <input type="button" value="set" onclick="set();">
+      <input id="file" type="file" />
     </form>
     Color: <input class="jscolor" value="000000" onchange="update(this.jscolor.toRGBString())">
     <input type="button" class="erase" value="Delete mode" onclick="erase()">
@@ -44,6 +45,32 @@
       function exportAsset() {
         console.log(sp.exportAsset());
       }
+      function onChange(event) {
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(event.target.files[0]);
+      }
+      (function(){
+    
+        function onChange(event) {
+            var reader = new FileReader();
+            reader.onload = onReaderLoad;
+            reader.readAsText(event.target.files[0]);
+        }
+
+        function onReaderLoad(event){
+            var obj = JSON.parse(event.target.result);
+            let rows = document.getElementById('rows').value;
+            let cols = document.getElementById('cols').value;
+            sp = new Spriter(rows, cols);
+            sp.import(obj);
+            document.getElementById('setGrid').remove();
+            document.getElementById('exportBtn').style.display = 'inline-block';
+        }
+    
+        document.getElementById('file').addEventListener('change', onChange);
+
+    }());
     </script>
   </body>
 </html>

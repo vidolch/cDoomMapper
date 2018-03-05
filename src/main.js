@@ -4,17 +4,14 @@ class Spriter {
 		this.context;
 		this.blockHeight = 30;
 		this.blockWidth = 30;
-		this.canvasWidth = rows * this.blockWidth;
-		this.canvasHeight = cols * this.blockHeight;
-
 		this.spriteMap = [];
+		this.rows = rows;
+		this.cols = cols;
 
 		for (let i = 0; i < cols; i++) {
 			this.spriteMap.push([]);
 			for (let j = 0; j < rows; j++) {
-				this.spriteMap[i].push({
-					background: 'transparent'
-				});
+				this.spriteMap[i].push('.');
 			}
 		}
 
@@ -28,7 +25,22 @@ class Spriter {
 		this.prepareCanvas();
 		this.redraw();
 	}
+	import(importObj) {
+		this.spriteMap = [];
+		for (let i = 0; i < importObj.length; i++) {
+			this.spriteMap.push([]);
+			for (let j = 0; j < importObj[i].length; j++) {
+				this.spriteMap[i].push(importObj[i][j]);
+			}
+		}
+		this.rows = importObj[0].length;
+		this.cols = importObj.length;
+		this.prepareCanvas();
+		this.redraw();
+	}
 	prepareCanvas() {
+		this.canvasWidth = this.rows * this.blockWidth;
+		this.canvasHeight = this.cols * this.blockHeight;
 		// Create the canvas (Neccessary for IE because it doesn't know what a canvas element is)
 		this.canvasDiv = document.getElementById('canvasDiv');
 		this.canvas = document.createElement('canvas');
@@ -81,7 +93,7 @@ class Spriter {
 	}
 
 	eraseMode() {
-		this.curColor = 'transparent';
+		this.curColor = '.';
 	}
 
 	clearCanvas() {
@@ -93,17 +105,17 @@ class Spriter {
 		if(this.clickX !== -1 && this.clickY !== -1) {
 			let clickX = Math.floor(this.clickX / this.blockHeight);
 			let clickY = Math.floor(this.clickY / this.blockHeight);
-			this.spriteMap[clickY][clickX].background = this.curColor;
+			this.spriteMap[clickY][clickX] = this.curColor;
 			this.clickX = -1;
 			this.clickY = -1;
 		}
 
 		for (let i = 0; i < this.spriteMap.length; i++) {
 			for (let j = 0; j < this.spriteMap[i].length; j++) {
-				if(this.spriteMap[i][j].background === 'transparent') {
+				if(this.spriteMap[i][j] === '.') {
 					this.context.fillStyle = 'rgba(0,0,0,0)';
 				} else {
-					this.context.fillStyle = this.spriteMap[i][j].background;
+					this.context.fillStyle = this.spriteMap[i][j];
 				}
 				this.context.strokeRect(j * this.blockWidth, i * this.blockHeight, this.blockWidth, this.blockHeight);
 				this.context.fillRect(j * this.blockWidth + 1, i * this.blockHeight + 1, this.blockWidth - 2, this.blockHeight - 2);
@@ -118,10 +130,10 @@ class Spriter {
 			let hasHorElements = false;
 			let tempHorBuffer = [];
 			for (let j = 0; j < this.spriteMap[i].length; j++) {
-				if(this.spriteMap[i][j].background === 'transparent') {
+				if(this.spriteMap[i][j] === '.') {
 					exportObj[i].push('.');
 				} else {
-					exportObj[i].push(this.spriteMap[i][j].background);
+					exportObj[i].push(this.spriteMap[i][j]);
 				}
 			}
 		}
