@@ -8,6 +8,7 @@ class Spriter {
 		this.rows = rows;
 		this.cols = cols;
 
+
 		for (let i = 0; i < cols; i++) {
 			this.spriteMap.push([]);
 			for (let j = 0; j < rows; j++) {
@@ -20,6 +21,8 @@ class Spriter {
 
 		this.drag = false;
 		this.curColor = "#000";
+		this.prevColor = "#000";
+		this.colors = [];
 	}
 	start() {
 		this.prepareCanvas();
@@ -31,6 +34,9 @@ class Spriter {
 			this.spriteMap.push([]);
 			for (let j = 0; j < importObj[i].length; j++) {
 				this.spriteMap[i].push(importObj[i][j]);
+				if(this.colors.filter((color) => color === importObj[i][j]).length === 0) {
+					this.colors.push(importObj[i][j]);
+				}
 			}
 		}
 		this.rows = importObj[0].length;
@@ -42,7 +48,7 @@ class Spriter {
 		this.canvasWidth = this.rows * this.blockWidth;
 		this.canvasHeight = this.cols * this.blockHeight;
 		// Create the canvas (Neccessary for IE because it doesn't know what a canvas element is)
-		this.canvasDiv = document.getElementById('canvasDiv');
+		this.canvasDiv = document.getElementById('drawing_area');
 		this.canvas = document.createElement('canvas');
 		this.canvas.setAttribute('width', this.canvasWidth);
 		this.canvas.setAttribute('height', this.canvasHeight);
@@ -88,12 +94,20 @@ class Spriter {
 		this.clickY = y;
 	}
 
-	updateColor(color) {
-		this.curColor = color;
+	updateColor(newColor) {
+		this.curColor = newColor;
+		if(this.colors.filter((color) => color === newColor).length === 0) {
+			this.colors.push(newColor);
+		}
 	}
 
 	eraseMode() {
-		this.curColor = '.';
+		if(this.curColor !== '.') {
+			this.prevColor = this.curColor;
+			this.curColor = '.';
+		} else {
+			this.curColor = this.prevColor;
+		}
 	}
 
 	clearCanvas() {

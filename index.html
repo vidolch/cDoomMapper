@@ -1,76 +1,184 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>cDoom Level Creator</title>
-    <script type="text/javascript" src="src/main.js"></script>
-    <script src="src/jscolor.js"></script>
-  </head>
-  <body>
-    <style>
-      canvas {
-        border: 1px solid black;
-        background-image: url(images/transparent.jpg);
-        background-repeat: repeat;
-        background-size: 50%;
-      }
-    </style>
-    <form action="" id="setGrid">
-      <input type="text" name="rows" id="rows" value="20">
-      <input type="text" name="cols" id="cols" value="20">
-      <input type="button" value="set" onclick="set();">
-      <input id="file" type="file" />
-    </form>
-    Color: <input class="jscolor" value="000000" onchange="update(this.jscolor.toRGBString())">
-    <input type="button" class="erase" value="Delete mode" onclick="erase()">
-    <input type="button" value="Export" onclick="exportAsset();" id="exportBtn" style="display: none;">
-    <div id="canvasDiv"></div>
 
-    
-    <script type="text/javascript">
-      var sp;
-      function set() {
-        let rows = document.getElementById('rows').value;
-        let cols = document.getElementById('cols').value;
-        sp = new Spriter(rows, cols);
-        sp.start();
-        document.getElementById('setGrid').remove();
-        document.getElementById('exportBtn').style.display = 'inline-block';
-      };
-      function update(color) {
-        sp.updateColor(color);
-      };
-      function erase() {
-        sp.eraseMode();
-      };
-      function exportAsset() {
-        console.log(sp.exportAsset());
-      }
-      function onChange(event) {
-        var reader = new FileReader();
-        reader.onload = onReaderLoad;
-        reader.readAsText(event.target.files[0]);
-      }
-      (function(){
-    
-        function onChange(event) {
-            var reader = new FileReader();
-            reader.onload = onReaderLoad;
-            reader.readAsText(event.target.files[0]);
-        }
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-        function onReaderLoad(event){
-            var obj = JSON.parse(event.target.result);
-            let rows = document.getElementById('rows').value;
-            let cols = document.getElementById('cols').value;
-            sp = new Spriter(rows, cols);
-            sp.import(obj);
-            document.getElementById('setGrid').remove();
-            document.getElementById('exportBtn').style.display = 'inline-block';
-        }
-    
-        document.getElementById('file').addEventListener('change', onChange);
+	<title>Not3D Spriter</title>
 
-    }());
-    </script>
-  </body>
+	<!-- Bootstrap CSS CDN -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	 crossorigin="anonymous">
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+	<div class="wrapper">
+		<!-- Sidebar Holder -->
+		<nav id="sidebar">
+			<div class="sidebar-header">
+				<h3>Not3D Spriter</h3>
+			</div>
+
+			<ul class="list-unstyled components">
+				<p>Tools:</p>
+				<li>
+					<a href="#">Import</a>
+				</li>
+				<li>
+					<a href="#" onclick="erase()">Delete mode</a>
+				</li>
+				<li>
+					<a href="#" onclick="exportAsset();" id="exportBtn" style="display: none;">Export</a>	
+				</li>
+			</ul>
+
+			<input class="jscolor form-control" value="000000" onchange="update(this.jscolor.toRGBString())">
+			<ul class="list-unstyled components" id="recent_colors">
+				<!-- <li>
+					<a href="#">Red</a>
+				</li> -->
+			</ul>
+		</nav>
+
+		<!-- Page Content Holder -->
+		<div id="content">
+			<nav class="navbar navbar-default">
+				<div class="container-fluid">
+
+					<div class="navbar-header">
+						<button type="button" id="sidebarCollapse" class="navbar-btn">
+							<span></span>
+							<span></span>
+							<span></span>
+						</button>
+					</div>
+
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a href="index.html">New</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<form action="" id="setGrid">
+				<div class="form-group row">
+					<label for="rows" class="col-sm-2 col-form-label">Rows:</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" name="rows" id="rows" value="20" placeholder="Rows">
+					</div>
+				</div>
+				<div class="form-group row">
+					<label for="cols" class="col-sm-2 col-form-label">Cols:</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" name="cols" id="cols" value="20" placeholder="Cols">
+					</div>
+				</div>
+				<div class="form-group row">
+					<div class="col-sm-12">
+						<div class="custom-file">
+							<input type="file" class="custom-file-input" id="file">
+							<label class="custom-file-label" for="validatedCustomFile">Import file...</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group row">
+					<div class="col-sm-10">
+						<input type="button" class="btn btn-primary" value="Create" onclick="set();">
+					</div>
+				</div>
+			</form>
+			<div id="drawing_area"></div>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	 crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	 crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	 crossorigin="anonymous"></script>
+
+	<script src="src/jscolor.js"></script>
+	<script src="src/main.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#sidebarCollapse').on('click', function () {
+				$('#sidebar').toggleClass('active');
+				$(this).toggleClass('active');
+			});
+		});
+
+		var sp;
+		var recentColorsEl;
+		var colors = [];
+		function set() {
+			let rows = document.getElementById('rows').value;
+			let cols = document.getElementById('cols').value;
+			sp = new Spriter(rows, cols);
+			sp.start();
+			document.getElementById('setGrid').remove();
+			document.getElementById('exportBtn').style.display = 'inline-block';
+		};
+		function update(newColor) {			
+			sp.updateColor(newColor);
+
+			updateColorList(newColor);			
+		};
+		function erase() {
+			sp.eraseMode();
+		};
+		function exportAsset() {
+			console.log(sp.exportAsset());
+		}
+		function onChange(event) {
+			var reader = new FileReader();
+			reader.onload = onReaderLoad;
+			reader.readAsText(event.target.files[0]);
+		}
+		function updateColorList(newColor) {
+			if(!recentColorsEl) recentColorsEl = document.getElementById('recent_colors');
+			recentColorsEl.innerHTML = '<p>Recent colors:</p>';
+			for (let i = sp.colors.length - 1; i >= 0 ; i--) {
+				const color = sp.colors[i];
+				let colorElement = document.createElement('li');
+				let linkElement = document.createElement('a');
+				if(newColor && color === newColor) {
+					linkElement.classList.add('active');
+				}
+				linkElement.onclick = function() {update(color);};
+				linkElement.innerHTML = color + '<span class="colorSample" style="background: ' + color + '"></span>';
+				colorElement.appendChild(linkElement);
+				recentColorsEl.appendChild(colorElement);	
+			}
+		}
+		(function () {
+
+			function onChange(event) {
+				var reader = new FileReader();
+				reader.onload = onReaderLoad;
+				reader.readAsText(event.target.files[0]);
+			}
+
+			function onReaderLoad(event) {
+				var obj = JSON.parse(event.target.result);
+				let rows = document.getElementById('rows').value;
+				let cols = document.getElementById('cols').value;
+				sp = new Spriter(rows, cols);
+				sp.import(obj);
+				document.getElementById('setGrid').remove();
+				document.getElementById('exportBtn').style.display = 'inline-block';
+				updateColorList();
+			}
+
+			document.getElementById('file').addEventListener('change', onChange);
+
+		}());
+	</script>
+</body>
+
 </html>
